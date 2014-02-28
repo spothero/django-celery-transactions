@@ -18,7 +18,17 @@ Celery's [user guide][1]. Send tasks from signal handlers without fear!
 
         $ pip install django-celery-transactions
 
-2. Use the patched decorator to create your tasks:
+2. Add the app to the django installed app
+
+        INSTALLED_APPS = (
+            'djcelery_transactions',
+            ...
+        )
+
+        Make sure in put the app first so that the monkey patching occurs.
+
+
+3. Use the patched decorator to create your tasks:
 
         from djcelery_transactions import task
         from models import Model
@@ -28,7 +38,7 @@ Celery's [user guide][1]. Send tasks from signal handlers without fear!
         def print_model(model_pk):
             print Model.objects.get(pk=model_pk)
 
-3. Then use them as normal:
+4. Then use them as normal:
 
         from django.db import transaction
         from models import Model

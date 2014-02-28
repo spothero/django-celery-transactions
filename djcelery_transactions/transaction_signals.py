@@ -105,18 +105,21 @@ def rollback_unless_managed(old_function, *args, **kwargs):
     if not transaction.is_managed():
         transaction.signals.post_rollback.send(None)
 
+def monkey_patch():
+    # Duck punching!
+    functions = (
+        commit,
+        commit_unless_managed,
+        leave_transaction_management,
+        managed,
+        rollback,
+        rollback_unless_managed,
+    )
 
-# Duck punching!
-functions = (
-    commit,
-    commit_unless_managed,
-    leave_transaction_management,
-    managed,
-    rollback,
-    rollback_unless_managed,
-)
+    for function in functions:
+        if function.__module__ != 'djcelery_transactions.transaction_signals':
+            name = function.__name__
+            function = partial(function, getattr(transaction, name))
+            setattr(transaction, name, function)
 
-for function in functions:
-    name = function.__name__
-    function = partial(function, getattr(transaction, name))
-    setattr(transaction, name, function)
+monkey_patch()

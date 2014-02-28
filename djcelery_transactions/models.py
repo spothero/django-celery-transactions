@@ -1,0 +1,3 @@
+from djcelery_transactions.transaction_signals import monkey_patch
+
+monkey_patch()
