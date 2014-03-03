@@ -117,9 +117,10 @@ def monkey_patch():
     )
 
     for function in functions:
-        if function.__module__ != 'djcelery_transactions.transaction_signals':
+        if not getattr(function, 'patched', False):
             name = function.__name__
             function = partial(function, getattr(transaction, name))
+            function.patched = True
             setattr(transaction, name, function)
 
 monkey_patch()
